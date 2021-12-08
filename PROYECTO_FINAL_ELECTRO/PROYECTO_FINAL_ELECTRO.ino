@@ -9,8 +9,9 @@ bool did = false;
 bool chat = true; //va en false
 bool otherChat = true;//va en false
 String input = "";
-String text = "Alisson";
+String text = "Hol";
 
+String colorAscii;
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 void setup(){
@@ -41,7 +42,7 @@ void loop()
   }
   */
   //setupMode();
-  //readInput();
+  readInput();
   
   lectura();
 }
@@ -53,6 +54,8 @@ void readInput(){
       input="";
       translateAscii();
     }
+  }else{
+    off(); 
   }
 }
 
@@ -60,21 +63,79 @@ void lectura(){
   uint16_t r, g, b, c, colorTemp, lux;
 
   tcs.getRawData(&r, &g, &b, &c);
-  colorTemp = tcs.calculateColorTemperature(r, g, b);
-  lux = tcs.calculateLux(r, g, b);
+  //colorTemp = tcs.calculateColorTemperature(r, g, b);
+  //lux = tcs.calculateLux(r, g, b);
+  
+  //Serial.print("Temperatura color: "); Serial.print(colorTemp, DEC); Serial.println(" K");
+  //Serial.print("Lux : "); Serial.println(lux, DEC);
+  //Serial.print("Rojo: "); Serial.println(r, DEC);
+  //Serial.print("Verde: "); Serial.println(g, DEC);
+  //Serial.print("Azul: "); Serial.println(b, DEC);
+  //Serial.print("Clear: "); Serial.println(c, DEC);
+  //Serial.println(" ");
+  String value0 = readColor(r,g,b);
+  delay(1000);
+  tcs.getRawData(&r, &g, &b, &c);
+  String value1 = readColor(r,g,b);
+  delay(1000);
+  tcs.getRawData(&r, &g, &b, &c);
+  String value2 = readColor(r,g,b);
 
-  Serial.print("Temperatura color: "); Serial.print(colorTemp, DEC); Serial.println(" K");
-  Serial.print("Lux : "); Serial.println(lux, DEC);
-  Serial.print("Rojo: "); Serial.println(r, DEC);
-  Serial.print("Verde: "); Serial.println(g, DEC);
-  Serial.print("Azul: "); Serial.println(b, DEC);
-  Serial.print("Clear: "); Serial.println(c, DEC);
-  Serial.println(" ");
+  String answer = value0 + value1 + value2;
+  Serial.println(answer);
   delay(1000);
 
-  analogWrite(LEDR, 0);
-  analogWrite(LEDG, 255);
-  analogWrite(LEDB, 255);  
+
+  //analogWrite(LEDR, 0);
+  //analogWrite(LEDG, 255);
+  //analogWrite(LEDB, 255);  
+}
+
+String readColor(uint16_t r, uint16_t g, uint16_t b){
+  
+  boolean redOn = (r > 1000) ? true: false;
+  boolean blueOn = (b > 1000) ? true: false;
+  boolean greenOn = (g > 1000) ? true: false;
+
+  int value;
+  if(redOn && !blueOn & !greenOn){
+    
+    if(r > 8000){
+        value = 5; 
+    } else{
+        value = 0;
+    }
+  }else if(!redOn && blueOn & !greenOn){
+  
+    if(b > 8000){
+        value = 6;
+    } else{
+        value = 1;
+    }
+  }else if(!redOn && !blueOn & greenOn){
+  
+    if(g > 8000){
+        value = 7;
+    } else{
+        value = 2;
+    }
+  }else if(!redOn && blueOn & greenOn){
+  
+    if(b > 8000){
+        value = 8;
+    } else{
+        value = 3;
+    }
+  }else if(redOn && blueOn & !greenOn){
+  
+    if(b > 8000){
+        value = 9;
+    } else{
+        value = 4;
+    }
+  }
+
+  return String(value);
 }
 
 void translateAscii(){
@@ -178,4 +239,10 @@ void setupMode(){
     digitalWrite(LEDG, LOW);
     digitalWrite(LEDB, LOW);
   }
+}
+
+void off(){
+  digitalWrite(LEDR, LOW); 
+  digitalWrite(LEDG, LOW);
+  digitalWrite(LEDB, LOW);
 }
