@@ -10,6 +10,7 @@ bool chat = true; //va en false
 bool otherChat = true;//va en false
 String input = "";
 String text = "H";
+boolean primero =false;
 
 String colorAscii;
 
@@ -60,21 +61,50 @@ void readInput(){
 void lectura(){
   uint16_t r, g, b, c, lux;
 
-  tcs.getRawData(&r, &g, &b, &c);
+  //tcs.getRawData(&r, &g, &b, &c);
 
-  Serial.print("Rojo: "); Serial.println(r, DEC);
-  Serial.print("Verde: "); Serial.println(g, DEC);
-  Serial.print("Azul: "); Serial.println(b, DEC);
-  Serial.println(" ");
+  //Serial.print("Rojo: "); Serial.println(r, DEC);
+  //Serial.print("Verde: "); Serial.println(g, DEC);
+  //Serial.print("Azul: "); Serial.println(b, DEC);
+  //Serial.println(" ");
   
-  boolean redOn = (r > 130) ? true: false; //arreglar 1000 por cifra que indique cuándo está prendido el led
-  boolean blueOn = (b > 300) ? true: false;
-  boolean greenOn = (g > 140) ? true: false;
-  String value0, value1, value2 = "";
+  boolean redOn, blueOn, greenOn;
+  String value = "";
+  String answer = "";
+
+  tcs.getRawData(&r, &g, &b, &c);
+  redOn = (r > 130) ? true: false; //arreglar 1000 por cifra que indique cuándo está prendido el led
+  blueOn = (b > 300) ? true: false;
+  greenOn = (g > 140) ? true: false; 
   if(redOn || blueOn || greenOn){
-    value0 = readColor(r,g,b);
+    for (int i = 0; i < 3; i++){
+    if(i!=0){
+      tcs.getRawData(&r, &g, &b, &c);
+      redOn = (r > 130) ? true: false; //arreglar 1000 por cifra que indique cuándo está prendido el led
+      blueOn = (b > 300) ? true: false;
+      greenOn = (g > 140) ? true: false; 
+    }
+    if(redOn || blueOn || greenOn){
+      if(!primero){
+        primero = true;
+        
+      }
+      value = readColor(r,g,b);
+      answer += value;
+      delay(1000);
+    }
+  }  
   }
-  //delay(1000);
+  /*
+  if(redOn || blueOn || greenOn){
+    if(!primero){
+      primero = true;
+      delay(400)
+     }
+    value0 = readColor(r,g,b);
+    delay(1000);
+  }
+  
   tcs.getRawData(&r, &g, &b, &c);
   redOn = (r > 130) ? true: false;
   blueOn = (b > 300) ? true: false;
@@ -82,19 +112,20 @@ void lectura(){
   if(redOn || blueOn || greenOn){
     //Serial.println("Entro 2");
     value1 = readColor(r,g,b);
+    delay(1000);
   }
-  //delay(1000);
   tcs.getRawData(&r, &g, &b, &c);
   if(redOn || blueOn || greenOn){
     //Serial.println("Entro 3");
     value2 = readColor(r,g,b);
-  }
+    delay(1000);
+  }*/
   
-  if(value0 != "" || value1 != "" || value2 != ""){
-    String answer = value0 + value1 + value2;
-    Serial.println("Valor: " + answer);
+  if(answer != ""){
+    //Serial.println("Valor: " + answer);
+    Serial.write(answer.toInt());
+    Serial.println(" ");
   }
-  //delay(1000);
 
 
   //analogWrite(LEDR, 0);
