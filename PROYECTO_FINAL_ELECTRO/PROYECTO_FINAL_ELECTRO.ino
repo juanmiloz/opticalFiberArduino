@@ -9,7 +9,7 @@ bool did = false;
 bool chat = true; //va en false
 bool otherChat = true;//va en false
 String input = "";
-String text = "Hol";
+String text = "H";
 
 String colorAscii;
 
@@ -54,8 +54,6 @@ void readInput(){
       input="";
       translateAscii();
     }
-  }else{
-    off(); 
   }
 }
 
@@ -73,17 +71,36 @@ void lectura(){
   //Serial.print("Azul: "); Serial.println(b, DEC);
   //Serial.print("Clear: "); Serial.println(c, DEC);
   //Serial.println(" ");
-  String value0 = readColor(r,g,b);
-  delay(1000);
+  
+  boolean redOn = (r > 1000) ? true: false;
+  boolean blueOn = (b > 1000) ? true: false;
+  boolean greenOn = (g > 1000) ? true: false;
+  String value0, value1, value2 = "";
+  if(redOn || blueOn || greenOn){
+    Serial.println("Entro 1");
+    value0 = readColor(r,g,b);
+  }
+  //delay(1000);
   tcs.getRawData(&r, &g, &b, &c);
-  String value1 = readColor(r,g,b);
-  delay(1000);
+  redOn = (r > 1000) ? true: false;
+  blueOn = (b > 1000) ? true: false;
+  greenOn = (g > 1000) ? true: false;
+  if(redOn || blueOn || greenOn){
+    Serial.println("Entro 2");
+    value1 = readColor(r,g,b);
+  }
+  //delay(1000);
   tcs.getRawData(&r, &g, &b, &c);
-  String value2 = readColor(r,g,b);
-
-  String answer = value0 + value1 + value2;
-  Serial.println(answer);
-  delay(1000);
+  if(redOn || blueOn || greenOn){
+    Serial.println("Entro 3");
+    value2 = readColor(r,g,b);
+  }
+  
+  if(value0 != "" || value1 != "" || value2 != ""){
+    String answer = value0 + value1 + value2;
+    Serial.println(answer);
+  }
+  //delay(1000);
 
 
   //analogWrite(LEDR, 0);
@@ -97,14 +114,14 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
   boolean blueOn = (b > 1000) ? true: false;
   boolean greenOn = (g > 1000) ? true: false;
 
-  int value;
+  int value = 0;
+  //if(redOn || blueOn || greenOn){
   if(redOn && !blueOn & !greenOn){
-    
-    if(r > 8000){
-        value = 5; 
-    } else{
-        value = 0;
-    }
+      if(r > 8000){
+          value = 5; 
+      } else{
+          value = 0;
+      }
   }else if(!redOn && blueOn & !greenOn){
   
     if(b > 8000){
@@ -133,7 +150,8 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
     } else{
         value = 4;
     }
-  }
+  //}
+}
 
   return String(value);
 }
@@ -154,6 +172,7 @@ void translateAscii(){
       colorN(n);
     }
   }
+  off();
 }
 
 void colorN(char n){
