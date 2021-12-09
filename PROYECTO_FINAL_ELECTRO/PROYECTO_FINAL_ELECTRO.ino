@@ -61,16 +61,11 @@ void lectura(){
   uint16_t r, g, b, c, colorTemp, lux;
 
   tcs.getRawData(&r, &g, &b, &c);
-  //colorTemp = tcs.calculateColorTemperature(r, g, b);
-  //lux = tcs.calculateLux(r, g, b);
-  
-  //Serial.print("Temperatura color: "); Serial.print(colorTemp, DEC); Serial.println(" K");
-  //Serial.print("Lux : "); Serial.println(lux, DEC);
-  //Serial.print("Rojo: "); Serial.println(r, DEC);
-  //Serial.print("Verde: "); Serial.println(g, DEC);
-  //Serial.print("Azul: "); Serial.println(b, DEC);
-  //Serial.print("Clear: "); Serial.println(c, DEC);
-  //Serial.println(" ");
+
+  Serial.print("Rojo: "); Serial.println(r, DEC);
+  Serial.print("Verde: "); Serial.println(g, DEC);
+  Serial.print("Azul: "); Serial.println(b, DEC);
+  Serial.println(" ");
   
   boolean redOn = (r > 1000) ? true: false;
   boolean blueOn = (b > 1000) ? true: false;
