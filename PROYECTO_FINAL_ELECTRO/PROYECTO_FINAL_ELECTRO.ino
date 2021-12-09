@@ -5,7 +5,7 @@ int LEDR = 11;
 int LEDB = 10;
 int LEDG = 9;
 
-bool did = false;
+bool did = false; //eliminar despues de pruebas
 bool chat = true; //va en false
 bool otherChat = true;//va en false
 String input = "";
@@ -58,7 +58,7 @@ void readInput(){
 }
 
 void lectura(){
-  uint16_t r, g, b, c, colorTemp, lux;
+  uint16_t r, g, b, c, lux;
 
   tcs.getRawData(&r, &g, &b, &c);
 
@@ -67,33 +67,32 @@ void lectura(){
   Serial.print("Azul: "); Serial.println(b, DEC);
   Serial.println(" ");
   
-  boolean redOn = (r > 1000) ? true: false;
-  boolean blueOn = (b > 1000) ? true: false;
-  boolean greenOn = (g > 1000) ? true: false;
+  boolean redOn = (r > 130) ? true: false; //arreglar 1000 por cifra que indique cuándo está prendido el led
+  boolean blueOn = (b > 300) ? true: false;
+  boolean greenOn = (g > 140) ? true: false;
   String value0, value1, value2 = "";
   if(redOn || blueOn || greenOn){
-    Serial.println("Entro 1");
     value0 = readColor(r,g,b);
   }
   //delay(1000);
   tcs.getRawData(&r, &g, &b, &c);
-  redOn = (r > 1000) ? true: false;
-  blueOn = (b > 1000) ? true: false;
-  greenOn = (g > 1000) ? true: false;
+  redOn = (r > 130) ? true: false;
+  blueOn = (b > 300) ? true: false;
+  greenOn = (g > 140) ? true: false;
   if(redOn || blueOn || greenOn){
-    Serial.println("Entro 2");
+    //Serial.println("Entro 2");
     value1 = readColor(r,g,b);
   }
   //delay(1000);
   tcs.getRawData(&r, &g, &b, &c);
   if(redOn || blueOn || greenOn){
-    Serial.println("Entro 3");
+    //Serial.println("Entro 3");
     value2 = readColor(r,g,b);
   }
   
   if(value0 != "" || value1 != "" || value2 != ""){
     String answer = value0 + value1 + value2;
-    Serial.println(answer);
+    Serial.println("Valor: " + answer);
   }
   //delay(1000);
 
@@ -105,11 +104,12 @@ void lectura(){
 
 String readColor(uint16_t r, uint16_t g, uint16_t b){
   
-  boolean redOn = (r > 1000) ? true: false;
-  boolean blueOn = (b > 1000) ? true: false;
-  boolean greenOn = (g > 1000) ? true: false;
-
+  //boolean redOn = (r > 1000) ? true: false;
+  //boolean blueOn = (b > 1000) ? true: false;
+  //boolean greenOn = (g > 1000) ? true: false;
+  
   int value = 0;
+  /*
   //if(redOn || blueOn || greenOn){
   if(redOn && !blueOn & !greenOn){
       if(r > 8000){
@@ -145,7 +145,35 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
     } else{
         value = 4;
     }
-  //}
+  //}*/
+  if(b>1000){
+    if(g>1000){
+        value = 8;
+    }else if(r>600){
+        value = 9;
+    }else{
+        value = 6;
+    }
+}else if(b>300){
+    if(b<330){
+        value = 1;
+    }else if(b<350){
+        value = 4;
+    }else{
+        value = 3;
+    }
+}else if(g>170){
+    if(g>700){
+        value = 7;
+    }else{
+        value = 2;
+    }
+}else if(r>100){
+    if(r>300){
+        value = 5;
+    }else{
+        value = 0;
+    }
 }
 
   return String(value);
@@ -252,7 +280,7 @@ void setupMode(){
     digitalWrite(LEDR, LOW); 
     digitalWrite(LEDG, LOW);
     digitalWrite(LEDB, LOW);
-  }
+  } //Falta la posibilidad de !chat y otherChat
 }
 
 void off(){
