@@ -5,23 +5,20 @@ int LEDR = 11;
 int LEDB = 10;
 int LEDG = 9;
 
-bool did = false; //eliminar despues de pruebas
-bool chat = true; //va en false
-bool otherChat = true;//va en false
+bool chat = false; //va en false
+bool otherChat = false;//va en false
 String input = "";
 String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito "porque", en vez de "por que", asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
-boolean primero = false;
 
 String colorAscii;
 
 uint16_t colorsList[20][3];    //Stores the meditions of 1 second
 int idxColorList = 0;       //Current medition
 int countLecture = 0;
-boolean firstZero = false;
-String currentChar = "";
+boolean firstZero = false;  //First read is zero
+String currentChar = "";    //Current char in reading process (ASCII Code)
 
-int count = 0;
-long start, finish;
+String eco = "";            //Eco of the 3rd test
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 void setup(){
@@ -35,8 +32,6 @@ void setup(){
   pinMode(LEDR,OUTPUT); // los pins digitales serán de salida
   pinMode(LEDG,OUTPUT);
   pinMode(LEDB,OUTPUT);
-
-  start = millis;
 }
 
 
@@ -54,19 +49,8 @@ void loop()
   }
   */
   //setupMode();
-  finish = millis();
-  //if(finish - start >= 1000){
-      //Serial.println(count);
-      //Serial.print("Tamaño ");
-      //Serial.println(sizeof(colorsList));
-  //}else{
-      readInput();
-      testLecture();
-      //count++;
-  //}
-
-  
-  //lectura();
+    readInput();
+    testLecture();
 }
 
 void readInput(){
@@ -99,7 +83,6 @@ void testLecture(){
         idxColorList = 0;
         if(firstZero){
             firstZero = false;
-            //Serial.println("In 1 -------------------------");
             getMax();
         }
     }else{
@@ -113,9 +96,7 @@ void testLecture(){
 
     if(currentChar.length() == 3){
         //Prints the char according to the colors read in 3 seconds
-        //Serial.println("In 2 -------------------------");
         Serial.write(currentChar.toInt());
-        //Serial.println(" ");
         currentChar = "";
     }
 }
@@ -164,10 +145,7 @@ void lectura(){
   boolean redOn, blueOn, greenOn;
   String value = "";
   //String answer = "";
-  //long start, finish, reciept = 0;
-  //start = millis();
   //tcs.getRawData(&r, &g, &b, &c);
-  //reciept = millis();
   redOn = (r > 120) ? true: false;
   blueOn = (b > 270) ? true: false;
   greenOn = (g > 140) ? true: false; 
@@ -176,15 +154,12 @@ void lectura(){
     Serial.print("Verde: "); Serial.println(g, DEC);
     Serial.print("Azul: "); Serial.println(b, DEC);
     Serial.println(" ");
-    //Serial.println("Recibido: " + reciept);
     value = readColor(r, g, b);
     if(countLecture == 0){
       //delay(100);
     }
     countLecture += 1;
     currentChar += value;
-    //finish = millis();
-    //Serial.println("Lectura " + finish - start);
     delay(1000);
     /*for (int i = 0; i < 3; i++){
     if(i!=0){
@@ -231,93 +206,45 @@ void lectura(){
   }*/
   
   if(countLecture == 3){
-    //Serial.println("Valor: " + currentChar);
     Serial.write(currentChar.toInt());
-    //Serial.print(": " + currentChar);
     Serial.println(" ");
     countLecture = 0;
     currentChar = "";
   }
-
-
-  //analogWrite(LEDR, 0);
-  //analogWrite(LEDG, 255);
-  //analogWrite(LEDB, 255);  
 }
 
 String readColor(uint16_t r, uint16_t g, uint16_t b){
   
-  //boolean redOn = (r > 1000) ? true: false;
-  //boolean blueOn = (b > 1000) ? true: false;
-  //boolean greenOn = (g > 1000) ? true: false;
-  
   int value = 0;
-  /*
-  //if(redOn || blueOn || greenOn){
-  if(redOn && !blueOn & !greenOn){
-      if(r > 8000){
-          value = 5; 
-      } else{
+  if(b>1000){
+      if(g>800){
+          value = 8;
+      }else if(r>=500){
+          value = 9;
+      }else{
+          value = 6;
+      }
+  }else if(b>300){
+      if(g > 140){
+          value = 3;
+      }else if(r > 120){
+          value = 4;
+      }else{
+          value = 1;
+      }
+  }else if(g>170){
+      if(g>600){
+          value = 7;
+      }else{
+          value = 2;
+      }
+  }else if(r>100){
+      if(r>300){
+          value = 5;
+      }else{
           value = 0;
       }
-  }else if(!redOn && blueOn & !greenOn){
-  
-    if(b > 8000){
-        value = 6;
-    } else{
-        value = 1;
-    }
-  }else if(!redOn && !blueOn & greenOn){
-  
-    if(g > 8000){
-        value = 7;
-    } else{
-        value = 2;
-    }
-  }else if(!redOn && blueOn & greenOn){
-  
-    if(b > 8000){
-        value = 8;
-    } else{
-        value = 3;
-    }
-  }else if(redOn && blueOn & !greenOn){
-  
-    if(b > 8000){
-        value = 9;
-    } else{
-        value = 4;
-    }
-  //}*/
-    if(b>1000){
-        if(g>800){
-            value = 8;
-        }else if(r>=500){
-            value = 9;
-        }else{
-            value = 6;
-        }
-    }else if(b>300){
-        if(g > 140){
-            value = 3;
-        }else if(r > 120){
-            value = 4;
-        }else{
-            value = 1;
-        }
-    }else if(g>170){
-        if(g>600){
-            value = 7;
-        }else{
-            value = 2;
-        }
-    }else if(r>100){
-        if(r>300){
-            value = 5;
-        }else{
-            value = 0;
-        }
-}
+  }
 
   return String(value);
 }
