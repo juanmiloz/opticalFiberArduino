@@ -9,7 +9,7 @@ bool did = false; //eliminar despues de pruebas
 bool chat = true; //va en false
 bool otherChat = true;//va en false
 String input = "";
-String text = "Hola como estas?";
+String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito "porque", en vez de "por que", asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
 boolean primero = false;
 
 String colorAscii;
