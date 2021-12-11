@@ -90,10 +90,10 @@ void testLecture(){
     blueOn = (b > 230) ? true: false;
     greenOn = (g > 140) ? true: false;
 
-    Serial.print("Rojo: "); Serial.println(r, DEC);
-    Serial.print("Verde: "); Serial.println(g, DEC);
-    Serial.print("Azul: "); Serial.println(b, DEC);
-    Serial.println(" ");
+    //Serial.print("Rojo: "); Serial.println(r, DEC);
+    //Serial.print("Verde: "); Serial.println(g, DEC);
+    //Serial.print("Azul: "); Serial.println(b, DEC);
+    //Serial.println(" ");
     
     if(r == 0 || b == 0 || g == 0){
         idxColorList = 0;
@@ -297,7 +297,7 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
         }else{
             value = 6;
         }
-    }else if(b>270){
+    }else if(b>300){
         if(g > 140){
             value = 3;
         }else if(r > 120){
