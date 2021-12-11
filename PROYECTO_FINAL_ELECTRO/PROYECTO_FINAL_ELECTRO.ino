@@ -5,8 +5,15 @@ int LEDR = 11;
 int LEDB = 10;
 int LEDG = 9;
 
-bool chat = false; //va en false
-bool otherChat = false;//va en false
+String CHAT_CHAR = "%";
+String ECO_CHAR = "!";    //Not defined in the statement
+String INFO_CHAR = "&";
+
+bool chat = false;      //Current chat is on
+bool otherChat = false; //Other chat is on
+bool eco = false;       //Eco is on
+bool sendInfo = false;  //Send text mode on
+
 String input = "";
 String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito "porque", en vez de "por que", asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
 
@@ -14,11 +21,12 @@ String colorAscii;
 
 uint16_t colorsList[20][3];    //Stores the meditions of 1 second
 int idxColorList = 0;       //Current medition
-int countLecture = 0;
+int countLecture = 0;       //DELETE
 boolean firstZero = false;  //First read is zero
 String currentChar = "";    //Current char in reading process (ASCII Code)
 
-String eco = "";            //Eco of the 3rd test
+char ecoReceipt = "";            //Eco reciept in the 3rd test
+char ecoSended = "";             //Eco sended to other arduino in the 3rd test
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 void setup(){
@@ -135,6 +143,14 @@ void printMatrix(){
       Serial.println(" ");
   }
 
+}
+
+bool isEcoCorrect(){
+  bool isCorrect = false;
+  if(ecoReciept != "" && ecoSended != ""){
+    isCorrect = ecoecoReciept.equals(ecoSended);
+  }
+  return isCorrect;
 }
 
 void lectura(){
