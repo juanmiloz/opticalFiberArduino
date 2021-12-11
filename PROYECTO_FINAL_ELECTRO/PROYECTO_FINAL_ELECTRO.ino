@@ -338,7 +338,7 @@ void translateAscii(){
       char n = values.charAt(j); 
       colorN(n);
       off();
-      delay(1000)
+      delay(1000);
     }
   }
   off();
