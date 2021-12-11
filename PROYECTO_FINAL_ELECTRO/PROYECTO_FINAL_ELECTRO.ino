@@ -9,8 +9,8 @@ String CHAT_CHAR = "%";
 String ECO_CHAR = "!";    //Not defined in the statement
 String INFO_CHAR = "&";
 
-bool chat = false;      //Current chat is on
-bool otherChat = false; //Other chat is on
+bool chat = true;      //Current chat is on, starts in false
+bool otherChat = true; //Other chat is on, starts in false
 bool eco = false;       //Eco is on
 bool sendInfo = false;  //Send text mode on
 
@@ -151,6 +151,10 @@ bool isEcoCorrect(){
     isCorrect = ecoecoReciept.equals(ecoSended);
   }
   return isCorrect;
+}
+
+bool isChatActive(){
+  return chat && otherChat;
 }
 
 void lectura(){
