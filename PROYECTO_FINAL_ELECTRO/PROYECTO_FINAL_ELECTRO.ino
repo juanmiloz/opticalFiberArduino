@@ -115,7 +115,7 @@ void testLecture(){
         //Prints the char according to the colors read in 3 seconds
         //Serial.println("In 2 -------------------------");
         Serial.write(currentChar.toInt());
-        Serial.println(" ");
+        //Serial.println(" ");
         currentChar = "";
     }
 }
@@ -135,14 +135,14 @@ void getMax(){
         gMax = (gTemp > gMax)? gTemp : gMax;
         bMax = (bTemp > bMax)? bTemp : bMax;
     }
-    Serial.print("Rojo Max: "); Serial.println(rMax, DEC);
-    Serial.print("Verde Max: "); Serial.println(gMax, DEC);
-    Serial.print("Azul Max: "); Serial.println(bMax, DEC);
-    Serial.println(" ");
+    //Serial.print("Rojo Max: "); Serial.println(rMax, DEC);
+    //Serial.print("Verde Max: "); Serial.println(gMax, DEC);
+    //Serial.print("Azul Max: "); Serial.println(bMax, DEC);
+    //Serial.println(" ");
 
     //printMatrix();
     currentChar += readColor(rMax, gMax, bMax);
-    Serial.println(currentChar);
+    //Serial.println(currentChar);
 }
 
 void printMatrix(){
@@ -330,12 +330,15 @@ void translateAscii(){
     Serial.println("Values: " + values);
     if(values.length() == 2){
         colorN('0');
+        off();
+        delay(1000);
     }
     
     for(int j = 0; j < values.length(); j++){
-      char n = values.charAt(j);
-       
+      char n = values.charAt(j); 
       colorN(n);
+      off();
+      delay(1000)
     }
   }
   off();
