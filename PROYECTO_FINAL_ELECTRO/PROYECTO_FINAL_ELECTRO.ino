@@ -14,7 +14,7 @@ bool otherChat = false; //Other chat is on, starts in false
 bool eco = false;       //Eco is on
 
 String input = "";
-String text = "Hola";
+String text = "";
 //String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito porque, en vez de por que, asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
 
 String colorAscii;
@@ -97,16 +97,23 @@ void readInput(){
 void testReadInput(){
   if(Serial.available() > 0){
     input = Serial.readStringUntil('\n');
-    if(isChatActive){
+    /*
+    Serial.println(input.equals(INFO_CHAR));
+    Serial.println(input.equals(ECO_CHAR));
+    Serial.println(input.equals(CHAT_CHAR));*/
+    if(isChatActive()){
       translateInput(input);
       
-    }else if(input == INFO_CHAR){
+    }else if(input.equals(INFO_CHAR)){
       input = "";
       translateAscii();
       
-    }else if(input == ECO_CHAR){
+    }else if(input.equals(ECO_CHAR)){
       eco = true;
       translateEco();
+      
+    }else if(input.equals(CHAT_CHAR)){
+      translateInput(input);
     }
   }
 }
