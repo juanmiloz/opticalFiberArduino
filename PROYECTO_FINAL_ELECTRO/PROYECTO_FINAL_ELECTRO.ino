@@ -9,13 +9,13 @@ String CHAT_CHAR = "%";
 String ECO_CHAR = "!";    //Not defined in the statement
 String INFO_CHAR = "&";
 
-bool chat = true;      //Current chat is on, starts in false
-bool otherChat = true; //Other chat is on, starts in false
+bool chat = false;      //Current chat is on, starts in false
+bool otherChat = false; //Other chat is on, starts in false
 bool eco = false;       //Eco is on
-bool sendInfo = false;  //Send text mode on
 
 String input = "";
-String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito "porque", en vez de "por que", asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
+String text = "Hola";
+//String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito porque, en vez de por que, asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
 
 String colorAscii;
 
@@ -25,8 +25,8 @@ int countLecture = 0;       //DELETE
 boolean firstZero = false;  //First read is zero
 String currentChar = "";    //Current char in reading process (ASCII Code)
 
-char ecoReceipt = "";            //Eco reciept in the 3rd test
-char ecoSended = "";             //Eco sended to other arduino in the 3rd test
+String ecoReceipt = "";            //Eco reciept in the 3rd test
+String ecoSended = "";             //Eco sended to other arduino in the 3rd test
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 void setup(){
@@ -56,9 +56,26 @@ void loop()
     }
   }
   */
-  //setupMode();
-    readInput();
+  if(isChatActive()){
+      testReadInput();
+      testLecture();
+  }else if(eco){
+      testLecture();
+      if(ecoReceipt.length() == 3){
+        translateInput(ecoReceipt);
+        if(ecoReceipt.toInt() ==  ECO_CHAR.toInt()){
+          eco = false;
+        }
+        ecoReceipt = "";
+      }
+  }else{
+    testReadInput();
     testLecture();
+  }
+  
+  //setupMode();
+  //readInput();
+  //testLecture();
 }
 
 void readInput(){
@@ -67,6 +84,29 @@ void readInput(){
     if(input=="&"){
       input="";
       translateAscii();
+    }
+  }else{
+    input= Serial.readStringUntil('\n');
+    if(input == "%"){
+      
+      translateInput(input);
+    }
+  }
+}
+
+void testReadInput(){
+  if(Serial.available() > 0){
+    input = Serial.readStringUntil('\n');
+    if(isChatActive){
+      translateInput(input);
+      
+    }else if(input == INFO_CHAR){
+      input = "";
+      translateAscii();
+      
+    }else if(input == ECO_CHAR){
+      eco = true;
+      translateEco();
     }
   }
 }
@@ -103,9 +143,17 @@ void testLecture(){
     }
 
     if(currentChar.length() == 3){
+        if(eco){
+          ecoReceipt = currentChar;
+        }
         //Prints the char according to the colors read in 3 seconds
         Serial.write(currentChar.toInt());
         currentChar = "";
+        //Serial.print("Chat: "); Serial.println(chat);
+        //Serial.print("Other chat: "); Serial.println(otherChat);
+    }
+    if(currentChar == '%'){
+      otherChat = !otherChat;
     }
 }
 
@@ -124,10 +172,10 @@ void getMax(){
         gMax = (gTemp > gMax)? gTemp : gMax;
         bMax = (bTemp > bMax)? bTemp : bMax;
     }
-    //Serial.print("Rojo Max: "); Serial.println(rMax, DEC);
-    //Serial.print("Verde Max: "); Serial.println(gMax, DEC);
-    //Serial.print("Azul Max: "); Serial.println(bMax, DEC);
-    //Serial.println(" ");
+    Serial.print("Rojo Max: "); Serial.println(rMax, DEC);
+    Serial.print("Verde Max: "); Serial.println(gMax, DEC);
+    Serial.print("Azul Max: "); Serial.println(bMax, DEC);
+    Serial.println(" ");
 
     //printMatrix();
     currentChar += readColor(rMax, gMax, bMax);
@@ -147,90 +195,14 @@ void printMatrix(){
 
 bool isEcoCorrect(){
   bool isCorrect = false;
-  if(ecoReciept != "" && ecoSended != ""){
-    isCorrect = ecoecoReciept.equals(ecoSended);
+  if(ecoReceipt != "" && ecoReceipt != ""){
+    isCorrect = ecoReceipt == ecoSended;
   }
   return isCorrect;
 }
 
 bool isChatActive(){
   return chat && otherChat;
-}
-
-void lectura(){
-  uint16_t r, g, b, c, lux;
-
-  tcs.getRawData(&r, &g, &b, &c);
-  
-  boolean redOn, blueOn, greenOn;
-  String value = "";
-  //String answer = "";
-  //tcs.getRawData(&r, &g, &b, &c);
-  redOn = (r > 120) ? true: false;
-  blueOn = (b > 270) ? true: false;
-  greenOn = (g > 140) ? true: false; 
-  if(redOn || blueOn || greenOn){
-    Serial.print("Rojo: "); Serial.println(r, DEC);
-    Serial.print("Verde: "); Serial.println(g, DEC);
-    Serial.print("Azul: "); Serial.println(b, DEC);
-    Serial.println(" ");
-    value = readColor(r, g, b);
-    if(countLecture == 0){
-      //delay(100);
-    }
-    countLecture += 1;
-    currentChar += value;
-    delay(1000);
-    /*for (int i = 0; i < 3; i++){
-    if(i!=0){
-      tcs.getRawData(&r, &g, &b, &c);
-      redOn = (r > 130) ? true: false; //arreglar 1000 por cifra que indique cuándo está prendido el led
-      blueOn = (b > 300) ? true: false;
-      greenOn = (g > 140) ? true: false; 
-    }
-    if(redOn || blueOn || greenOn){
-      if(!primero){
-        primero = true;
-        
-      }
-      value = readColor(r,g,b);
-      answer += value;
-      delay(1000);
-    }
-  } */ 
-  }
-  /*
-  if(redOn || blueOn || greenOn){
-    if(!primero){
-      primero = true;
-      delay(400)
-     }
-    value0 = readColor(r,g,b);
-    delay(1000);
-  }
-  
-  tcs.getRawData(&r, &g, &b, &c);
-  redOn = (r > 130) ? true: false;
-  blueOn = (b > 300) ? true: false;
-  greenOn = (g > 140) ? true: false;
-  if(redOn || blueOn || greenOn){
-    //Serial.println("Entro 2");
-    value1 = readColor(r,g,b);
-    delay(1000);
-  }
-  tcs.getRawData(&r, &g, &b, &c);
-  if(redOn || blueOn || greenOn){
-    //Serial.println("Entro 3");
-    value2 = readColor(r,g,b);
-    delay(1000);
-  }*/
-  
-  if(countLecture == 3){
-    Serial.write(currentChar.toInt());
-    Serial.println(" ");
-    countLecture = 0;
-    currentChar = "";
-  }
 }
 
 String readColor(uint16_t r, uint16_t g, uint16_t b){
@@ -244,7 +216,7 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
       }else{
           value = 6;
       }
-  }else if(b>300){
+  }else if(b>320){
       if(g > 140){
           value = 3;
       }else if(r > 120){
@@ -270,7 +242,23 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
 }
 
 void translateAscii(){
-  char ascii[text.length()];
+  for(int i = 0; i < text.length(); i++){
+    String values = String(int(text.charAt(i)));   
+    Serial.println("Values: " + values);
+    if(values.length() == 2){
+        colorN('0');
+        off();
+        delay(1000);
+    }
+    
+    for(int j = 0; j < values.length(); j++){
+      char n = values.charAt(j); 
+      colorN(n);
+      off();
+      delay(1000);
+    }
+  }
+  /*char ascii[text.length()];
   text.toCharArray(ascii,text.length()+1);
   for(int i = 0; i < sizeof(ascii); i++){
     String values = String(int(ascii[i]));   
@@ -287,8 +275,65 @@ void translateAscii(){
       off();
       delay(1000);
     }
+  }*/
+  //off();
+}
+
+void translateEco(){
+  for(int i = 0; i < text.length() && isEcoCorrect(); i++){
+    String values = String(int(text.charAt(i)));   
+    ecoSended = values;
+    ecoReceipt = "";
+    if(values.length() == 2){
+        colorN('0');
+        off();
+        delay(1000);
+    }
+    
+    for(int j = 0; j < values.length(); j++){
+      char n = values.charAt(j); 
+      colorN(n);
+      off();
+      delay(1000);
+    }
+
+    //wait until confirm the value sended is the same receipt
+    waitEco();
+    if(!isEcoCorrect()){
+      Serial.println("Error de Eco: El caracter enviado es distinto al recibido");
+    }
   }
-  off();
+  eco = false;
+  //endEco();
+}
+
+void translateInput(String input){
+  for(int i = 0; i < input.length() && isChatActive(); i++){
+    String values = String(int(input.charAt(i)));   
+    Serial.println("Values: " + values);
+    if(values.length() == 2){
+        colorN('0');
+        off();
+        delay(1000);
+    }
+    
+    for(int j = 0; j < values.length(); j++){
+      char n = values.charAt(j); 
+      colorN(n);
+      off();
+      delay(1000);
+    }
+    
+    if(CHAT_CHAR.toInt() == values.toInt()){
+      chat = !chat;
+    }
+  }
+}
+
+void waitEco(){
+  while(ecoReceipt.length() != 3){
+    testLecture();
+  } 
 }
 
 void colorN(char n){
