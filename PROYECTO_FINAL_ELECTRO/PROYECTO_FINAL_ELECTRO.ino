@@ -114,6 +114,8 @@ void testReadInput(){
       
     }else if(input.equals(CHAT_CHAR)){
       translateInput(input);
+      Serial.println(chat);
+      Serial.println(otherChat);
     }
   }
 }
@@ -318,7 +320,7 @@ void translateEco(){
 }
 
 void translateInput(String input){
-  for(int i = 0; i < input.length() && isChatActive(); i++){
+  for(int i = 0; i < input.length(); i++){
     String values = String(int(input.charAt(i)));   
     Serial.println("Values: " + values);
     if(values.length() == 2){
@@ -333,8 +335,10 @@ void translateInput(String input){
       off();
       delay(1000);
     }
-    
+
+    Serial.println(CHAT_CHAR);
     if(CHAT_CHAR.toInt() == values.toInt()){
+      Serial.println("Aquí");
       chat = !chat;
     }
   }
