@@ -14,8 +14,8 @@ bool otherChat = false; //Other chat is on, starts in false
 bool eco = false;       //Eco is on
 
 String input = "";
-//String text = "k";
-String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito porque, en vez de por que, asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
+String text = "Texto prueba eco";
+//String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito porque, en vez de por que, asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
 
 String colorAscii;
 
@@ -43,19 +43,7 @@ void setup(){
 }
 
 
-void loop()
-{
-  /*if(Serial.available()){
-    input = Serial.readStringUntil('\n');
-    if(input=="%" && !chat){
-      chat = true;
-      input = "";
-    }else if(input=="%" && chat){
-      chat = false;
-      input = "";
-    }
-  }
-  */
+void loop(){
   if(isChatActive()){
       testReadInput();
       testLecture();
@@ -72,10 +60,6 @@ void loop()
     testReadInput();
     testLecture();
   }
-  
-  //setupMode();
-  //readInput();
-  //testLecture();
 }
 
 void readInput(){
@@ -97,10 +81,7 @@ void readInput(){
 void testReadInput(){
   if(Serial.available() > 0){
     input = Serial.readStringUntil('\n');
-    /*
-    Serial.println(input.equals(INFO_CHAR));
-    Serial.println(input.equals(ECO_CHAR));
-    Serial.println(input.equals(CHAT_CHAR));*/
+    
     if(isChatActive()){
       translateInput(input);
       
@@ -111,12 +92,12 @@ void testReadInput(){
       
     }else if(input.equals(ECO_CHAR)){
       eco = true;
+      translateInput(ECO_CHAR);
       translateEco();
+      translateInput(ECO_CHAR);
       
     }else if(input.equals(CHAT_CHAR)){
       translateInput(input);
-      //Serial.println(chat);
-      //Serial.println(otherChat);
     }
   }
 }
@@ -154,17 +135,17 @@ void testLecture(){
 
     if(currentChar.length() == 3){
         if(eco){
-          ecoReceipt = currentChar;
+          ecoReceipt = String(char(currentChar.toInt()));
         }
         //Prints the char according to the colors read in 3 seconds
         Serial.write(currentChar.toInt());
         //Serial.println(" ");
         if(currentChar.toInt() == int(CHAT_CHAR.charAt(0))){
           otherChat = !otherChat;
+        }else if(currentChar.toInt() == int(ECO_CHAR.charAt(0))){
+            eco = !eco;
         }
         currentChar = "";
-        //Serial.print("Chat: "); Serial.println(chat);
-        //Serial.print("Other chat: "); Serial.println(otherChat);
     }
 }
 
@@ -205,11 +186,7 @@ void printMatrix(){
 }
 
 bool isEcoCorrect(){
-  bool isCorrect = false;
-  if(ecoReceipt != "" && ecoReceipt != ""){
-    isCorrect = ecoReceipt == ecoSended;
-  }
-  return isCorrect;
+  return ecoReceipt.equals(ecoSended);
 }
 
 bool isChatActive(){
@@ -230,7 +207,7 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
   }else if(b>270){
       if(g > 140){
           value = 3;
-      }else if(r > 120){
+      }else if(r > 110){
           value = 4;
       }else{
           value = 1;
@@ -291,10 +268,10 @@ void translateAscii(){
 }
 
 void translateEco(){
-  text = text + ECO_CHAR;
+  text = text;
   for(int i = 0; i < text.length() && isEcoCorrect(); i++){
     String values = String(int(text.charAt(i)));   
-    ecoSended = values;
+    ecoSended = text.charAt(i);
     ecoReceipt = "";
     if(values.length() == 2){
         colorN('0');
@@ -308,17 +285,16 @@ void translateEco(){
       off();
       delay(1000);
     }
-
     //wait until confirm the value sended is the same receipt
     waitEco();
+    ecoReceipt = String(char(ecoReceipt.toInt()));
     if(!isEcoCorrect()){
+      Serial.println(" ");
       Serial.println("Error de Eco: El caracter enviado es distinto al recibido");
     }
+    
   }
   eco = false;
-  text.remove(text.length() - 1);
-  //In case the remove does not works use: translateInput(ECO_CHAR);
-  //and remove the first line of the method.
 }
 
 void translateInput(String input){
@@ -347,7 +323,14 @@ void translateInput(String input){
 void waitEco(){
   while(ecoReceipt.length() != 3){
     testLecture();
-  } 
+    if(!ecoReceipt.equals("")){
+      Serial.println(ecoReceipt);
+      ecoReceipt = String(int(ecoReceipt.charAt(0)));
+      if(ecoReceipt.length() == 2){
+        ecoReceipt = "0" + ecoReceipt;
+      }
+    }
+  }
 }
 
 void colorN(char n){
