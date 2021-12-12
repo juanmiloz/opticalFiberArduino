@@ -14,8 +14,8 @@ bool otherChat = false; //Other chat is on, starts in false
 bool eco = false;       //Eco is on
 
 String input = "";
-String text = "";
-//String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito porque, en vez de por que, asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
+//String text = "k";
+String text = "Escribi un cuento de cien palabras perfecto. La gente lo leia con avidez, y lo enviaban entusiasmados a sus amigos. Me llamaron para hablar sobre el cuento en la tele, y desde Hollywood querian adaptarlo. Entonces alguien descubrio que habia escrito porque, en vez de por que, asi que ahora sobraba una palabra. Pero quitar cualquiera de ellas desmontaba el delicado mecanismo de relojeria que habia conseguido construir. Finalmente elimine";
 
 String colorAscii;
 
@@ -106,6 +106,7 @@ void testReadInput(){
       
     }else if(input.equals(INFO_CHAR)){
       input = "";
+      //Serial.println("In");
       translateAscii();
       
     }else if(input.equals(ECO_CHAR)){
@@ -114,8 +115,8 @@ void testReadInput(){
       
     }else if(input.equals(CHAT_CHAR)){
       translateInput(input);
-      Serial.println(chat);
-      Serial.println(otherChat);
+      //Serial.println(chat);
+      //Serial.println(otherChat);
     }
   }
 }
@@ -157,13 +158,13 @@ void testLecture(){
         }
         //Prints the char according to the colors read in 3 seconds
         Serial.write(currentChar.toInt());
+        //Serial.println(" ");
+        if(currentChar.toInt() == int(CHAT_CHAR.charAt(0))){
+          otherChat = !otherChat;
+        }
         currentChar = "";
         //Serial.print("Chat: "); Serial.println(chat);
         //Serial.print("Other chat: "); Serial.println(otherChat);
-    }
-    if(currentChar.equals("%")){
-      Serial.println("Que?");
-      otherChat = !otherChat;
     }
 }
 
@@ -182,10 +183,10 @@ void getMax(){
         gMax = (gTemp > gMax)? gTemp : gMax;
         bMax = (bTemp > bMax)? bTemp : bMax;
     }
-    Serial.print("Rojo Max: "); Serial.println(rMax, DEC);
-    Serial.print("Verde Max: "); Serial.println(gMax, DEC);
-    Serial.print("Azul Max: "); Serial.println(bMax, DEC);
-    Serial.println(" ");
+    //Serial.print("Rojo Max: "); Serial.println(rMax, DEC);
+    //Serial.print("Verde Max: "); Serial.println(gMax, DEC);
+    //Serial.print("Azul Max: "); Serial.println(bMax, DEC);
+    //Serial.println(" ");
 
     //printMatrix();
     currentChar += readColor(rMax, gMax, bMax);
@@ -221,12 +222,12 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
   if(b>1000){
       if(g>800){
           value = 8;
-      }else if(r>=500){
+      }else if(r>=400){
           value = 9;
       }else{
           value = 6;
       }
-  }else if(b>320){
+  }else if(b>270){
       if(g > 140){
           value = 3;
       }else if(r > 120){
@@ -234,7 +235,7 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
       }else{
           value = 1;
       }
-  }else if(g>170){
+  }else if(g>150){
       if(g>600){
           value = 7;
       }else{
@@ -254,7 +255,7 @@ String readColor(uint16_t r, uint16_t g, uint16_t b){
 void translateAscii(){
   for(int i = 0; i < text.length(); i++){
     String values = String(int(text.charAt(i)));   
-    Serial.println("Values: " + values);
+    //Serial.println("Values: " + values);
     if(values.length() == 2){
         colorN('0');
         off();
@@ -323,7 +324,7 @@ void translateEco(){
 void translateInput(String input){
   for(int i = 0; i < input.length(); i++){
     String values = String(int(input.charAt(i)));   
-    Serial.println("Values: " + values);
+    //Serial.println("Values: " + values);
     if(values.length() == 2){
         colorN('0');
         off();
@@ -337,7 +338,7 @@ void translateInput(String input){
       delay(1000);
     }
 
-    if(int(CHAT_CHAR.charAt(0) == values.toInt()){
+    if(int(CHAT_CHAR.charAt(0)) == values.toInt()){
       chat = !chat;
     }
   }
