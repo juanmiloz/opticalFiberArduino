@@ -161,7 +161,8 @@ void testLecture(){
         //Serial.print("Chat: "); Serial.println(chat);
         //Serial.print("Other chat: "); Serial.println(otherChat);
     }
-    if(currentChar == '%'){
+    if(currentChar.equals("%")){
+      Serial.println("Que?");
       otherChat = !otherChat;
     }
 }
@@ -336,9 +337,7 @@ void translateInput(String input){
       delay(1000);
     }
 
-    Serial.println(CHAT_CHAR);
-    if(CHAT_CHAR.toInt() == values.toInt()){
-      Serial.println("Aquí");
+    if(int(CHAT_CHAR.charAt(0) == values.toInt()){
       chat = !chat;
     }
   }
