@@ -280,6 +280,7 @@ void translateAscii(){
 }
 
 void translateEco(){
+  text = text + ECO_CHAR;
   for(int i = 0; i < text.length() && isEcoCorrect(); i++){
     String values = String(int(text.charAt(i)));   
     ecoSended = values;
@@ -304,7 +305,9 @@ void translateEco(){
     }
   }
   eco = false;
-  //endEco();
+  text.remove(text.length() - 1);
+  //In case the remove does not works use: translateInput(ECO_CHAR);
+  //and remove the first line of the method.
 }
 
 void translateInput(String input){
